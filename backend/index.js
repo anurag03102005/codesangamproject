@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const authRoutes = require('./routes/auth.route')
+const authRoutes = require('./routes/auth.route');
+const path = require('path');
 
 
 //
@@ -9,6 +10,11 @@ const port = 5000;
 async function connectDB(){
     await mongoose.connect('mongodb://127.0.0.1:27017/test')
 }
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+//middlewares
+app.use(express.urlencoded({ extended: true })); 
+app.use(express.json());
 //routes
 app.use('/api/auth',authRoutes);
 
