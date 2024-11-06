@@ -5,7 +5,6 @@ function login(req,res){
 }
 async function signUp(req,res){
     const username= req.body.username;
-    if()
     const password = req.body.password;
     const salt = await bcrypt.genSalt(10);
 	const hashedPassword = await bcrypt.hash(password, salt);
