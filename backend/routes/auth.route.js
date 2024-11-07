@@ -1,12 +1,14 @@
-const express = require('express');
-const authController = require('../controllers/auth.controller')
-const router = express();
+const express = require("express");
+const authController = require("../controllers/auth.controller");
+const router = express.Router();
 
-router.get('/',(req,res)=>{res.send("hi")});
-router.get('/login',(req,res)=>{res.render('login.ejs')});
-router.get('/signUp',(req,res)=>{res.render('signUp.ejs')});
+// Routes for rendering signup and login pages
+router.get("/signup", (req, res) => res.render("signup"));
+router.get("/login", (req, res) => res.render("login"));
 
-router.post('/login',authController.login);
-router.post('/signUp',authController.signUp);
-router.post('/logout',authController.logout);
-module.exports = router
+// Routes for signup, login, and logout actions
+router.post("/signup", authController.signup);
+router.post("/login", authController.login);
+router.post("/logout", authController.logout);
+
+module.exports = router;

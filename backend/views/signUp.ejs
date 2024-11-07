@@ -3,18 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Signup</title>
 </head>
 <body>
-    <form action="/api/auth/signUp" method="POST">
+    <h1>Signup</h1>
+    <% if (typeof error !== 'undefined') { %>
+        <p style="color: red;"><%= error %></p>
+    <% } %>
+    <form action="/api/auth/signup" method="post">
         <input type="text" name="username" placeholder="Username" required>
         <br>
         <input type="password" name="password" placeholder="Password" required>
         <br>
-        <input type="password" name="confirm" placeholder="Confirm Password" required>
+        <input type="password" name="confirmpassword" placeholder="Confirm Password" required>
         <br>
-        <button type="submit">Sign Up</button>
+        <button type="submit">Signup</button>
     </form>
-    
+    <p>Already have an account? <a href="/api/auth/login">Login here</a></p>
 </body>
 </html>

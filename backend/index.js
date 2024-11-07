@@ -1,31 +1,40 @@
 const express = require("express");
-const mongoose = require("mongoose");
-const authRoutes = require("./routes/auth.route");
 const path = require("path");
-
-//abcd
-//efgh
+const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
+const authRoutes = require("./routes/auth.route.js");
+const userRoutes = require("./routes/user.route.js");
+const port = 8080;
 const app = express();
-const port = 5000;
-async function connectDB() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/test");
-}
+
+// Set EJS as the view engine
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-//middlewares
+
+// Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-//routes
-app.use("/api/auth", authRoutes);
+app.use(cookieParser());
 
+// Route Setup
+app.use("/api/auth", authRoutes); // Routes for signup, login, and logout
+app.use("/api/user", userRoutes); // Routes starting from /api/user
+
+// Database Connection
+async function connectdb() {
+    try {
+        await mongoose.connect("mongodb://127.0.0.1:27017/test", {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        console.log("Database connected");
+    } catch (err) {
+        console.error("Database connection error:", err);
+    }
+}
+
+// Start Server
 app.listen(port, () => {
-  console.log(`listening on port ${port}`);
-  //connecting to database
-  connectDB()
-    .then(() => {
-      console.log("connected to database...");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    console.log(`App is listening at http://localhost:${port}`);
+    connectdb();
 });
