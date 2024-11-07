@@ -23,10 +23,7 @@ app.use("/api/user", userRoutes); // Routes starting from /api/user
 // Database Connection
 async function connectdb() {
     try {
-        await mongoose.connect("mongodb://127.0.0.1:27017/test", {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
+        await mongoose.connect("mongodb://127.0.0.1:27017/test");
         console.log("Database connected");
     } catch (err) {
         console.error("Database connection error:", err);
