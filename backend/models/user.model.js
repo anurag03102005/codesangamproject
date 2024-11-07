@@ -8,9 +8,26 @@ const userSchema = new mongoose.Schema({
     },
     password:{
         type:String,
-        requires:true,
+        required:true,
         minlength:5,
+    },
+    name:{
+        type:String,
+    },
+    semester:{
+        type:Number,
+    },
+    points:{
+        type:Number,
+        default:0
+    },
+    regNo:{
+        type:Number,
+    },
+    course:{
+        type:[String]
     }
+
 });
 const User =  mongoose.model('User',userSchema);
 module.exports = User;

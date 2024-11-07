@@ -5,5 +5,6 @@ const router = express.Router();
 
 // Get user profile page (after successful login)
 router.get("/", authenticate, userController.getMe);
+router.get("/profile",userController.getProfile);
 
 module.exports = router;

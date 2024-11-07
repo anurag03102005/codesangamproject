@@ -11,5 +11,8 @@ const getMe = (req, res) => {
         res.render("error", { error: "An error occurred while loading the profile page." });
     }
 };
+const getProfile = (req, res) => {
+    
+};
 
-module.exports = { getMe };
+module.exports = { getMe,getProfile };
