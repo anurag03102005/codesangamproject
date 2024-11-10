@@ -11,6 +11,14 @@ const userSchema = new mongoose.Schema({
         required:true,
         minlength:5,
     },
+    email:{
+        type:String,
+        required:true
+    },
+    isTeacher:{
+        type:Boolean,
+        required:true
+    },
     name:{
         type:String,
     },

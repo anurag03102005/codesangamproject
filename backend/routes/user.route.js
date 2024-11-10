@@ -4,7 +4,7 @@ const authenticate = require("../middlewares/authenticate"); // Middleware to ch
 const router = express.Router();
 
 // Get user profile page (after successful login)
-router.get("/", authenticate, userController.getMe);
+router.get("/",  userController.getMe);
 router.get("/profile",userController.getProfile);
 
 module.exports = router;

@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/auth.route.js");
 const userRoutes = require("./routes/user.route.js");
+const authenticate = require("./middlewares/authenticate.js");
 const port = 8080;
 const app = express();
 
@@ -18,7 +19,7 @@ app.use(cookieParser());
 
 // Route Setup
 app.use("/api/auth", authRoutes); // Routes for signup, login, and logout
-app.use("/api/user", userRoutes); // Routes starting from /api/user
+app.use("/api/user",authenticate,userRoutes); // Routes starting from /api/user
 
 // Database Connection
 async function connectdb() {

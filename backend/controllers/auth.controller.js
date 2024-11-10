@@ -1,73 +1,64 @@
-const User = require("../models/user.model");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const User = require('../models/user.model');
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt');
+const JWT_SECRET = "your_jwt_secret_key";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key"; // Ensure you use a secure key in production
-
-// Signup function
-const signup = async (req, res) => {
+async function login(req,res){
     try {
-        const { username, password, confirmpassword } = req.body;
+        console.log(req.body);
+    let {username,password} = req.body;
+    let exisitingUser = await User.findOne({username});
+    if(!exisitingUser){
+        return res.render('login',{error:"incorrect username"});
+    }
+    const isValidPassword = await bcrypt.compare(password,exisitingUser.password);
+    if(!isValidPassword){
+        return res.render('login',{error:"incorrect password"});
+    }
+    const token = jwt.sign({id:exisitingUser._id,username:exisitingUser.username},JWT_SECRET,{expiresIn:"1h"});
+    res.cookie('token',token,{httpOnly:true,maxAge:3600000});
+    res.redirect("/api/user");
+        
+    } catch (error) {
+        console.log(error);
+        res.render(login,{error:"an error has occured during login"});
+    }
+    
 
-        // Check if the username already exists
-        const existingUser = await User.findOne({ username });
-        if (existingUser) {
-            return res.render("signup", { error: "Username already exists" });
+}
+function logout(req,res){
+    res.clearCookie('token');
+    res.redirect("/api/auth/login");
+}
+async function signup(req,res){
+    try {
+        console.log(req.body);
+        let {username,password,confirmPassword,email,isTeacher} = req.body;
+        isTeacher = isTeacher==="true";
+        //password length
+        if(password.length<=5){
+            return res.render('signup',{error:"Password should if of atleast 6 characters"});
         }
-
-        // Validate password length and match
-        if (password.length < 6) {
-            return res.render("signup", { error: "Password must be at least 6 characters" });
+        //confirmPassword!=password
+        if(confirmPassword!==password){
+            return res.render('signup',{error:"Password and confirm password doesn't match"});
         }
-        if (password !== confirmpassword) {
-            return res.render("signup", { error: "Passwords do not match" });
+        //unique usename
+        let exisitingUser = await User.findOne({username});
+        if(exisitingUser){
+            return res.render('signup',{error:"Username already exists"});
         }
-
-        // Hash the password and create a new user
+        //
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-        const newUser = new User({ username, password: hashedPassword });
+        const hashedPassword = await bcrypt.hash(password,salt);
+        let newUser = new User({username,password:hashedPassword,email,isTeacher});
         await newUser.save();
-
-        res.redirect("/api/auth/login"); // Redirect to login page after successful signup
-    } catch (e) {
-        console.error(e);
-        res.render("signup", { error: "An error occurred during signup" });
+        res.redirect("/api/auth/login");
+        
+    } catch (error) {
+        console.log(error);
+        res.rednder(signup,{error:"an error has occurred in signup"});
     }
-};
 
-// Login function
-const login = async (req, res) => {
-    try {
-        const { username, password } = req.body;
-
-        // Find user by username
-        const user = await User.findOne({ username });
-        if (!user) {
-            return res.render("login", { error: "Invalid credentials" });
-        }
-
-        // Validate password
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            return res.render("login", { error: "Invalid credentials" });
-        }
-
-        // Generate JWT token and set it in a cookie
-        const token = jwt.sign({ id: user._id, username: user.username }, JWT_SECRET, { expiresIn: "1h" });
-        res.cookie("token", token, { httpOnly: true, maxAge: 3600000 }); // 1 hour
-
-        res.redirect("/api/user"); // Redirect to user page after login
-    } catch (e) {
-        console.error(e);
-        res.render("login", { error: "An error occurred during login" });
-    }
-};
-
-// Logout function
-const logout = (req, res) => {
-    res.clearCookie("token"); // Clear JWT token from cookies
-    res.redirect("/api/auth/login"); // Redirect to login page after logout
-};
-
-module.exports = { signup, login, logout };
+}
+module.exports = {signup,login,logout}
