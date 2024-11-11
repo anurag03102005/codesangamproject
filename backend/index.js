@@ -5,7 +5,9 @@ const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/auth.route.js");
 const userRoutes = require("./routes/user.route.js");
 const authenticate = require("./middlewares/authenticate.js");
-const port = 8080;
+require("dotenv").config();
+
+const port = process.env.PORT ;
 const app = express();
 
 // Set EJS as the view engine
@@ -19,20 +21,25 @@ app.use(cookieParser());
 
 // Route Setup
 app.use("/api/auth", authRoutes); // Routes for signup, login, and logout
-app.use("/api/user",authenticate,userRoutes); // Routes starting from /api/user
+app.use("/api/user", authenticate, userRoutes); // Routes starting from /api/user
 
 // Database Connection
 async function connectdb() {
     try {
-        await mongoose.connect("mongodb://127.0.0.1:27017/test");
+        await mongoose.connect(process.env.MONGODB_URI);
         console.log("Database connected");
     } catch (err) {
         console.error("Database connection error:", err);
+        process.exit(1); // Exit the process if the database connection fails
     }
 }
 
-// Start Server
-app.listen(port, () => {
-    console.log(`App is listening at http://localhost:${port}`);
-    connectdb();
+// Start Server after DB Connection
+connectdb().then(() => {
+    app.listen(port, () => {
+        console.log(`App is listening at http://localhost:${port}`);
+    });
+}).catch((error) => {
+    console.error("Failed to start server:", error);
 });
+
